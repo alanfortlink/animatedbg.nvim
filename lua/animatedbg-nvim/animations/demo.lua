@@ -27,10 +27,22 @@ local M = {
       --- @param canvas Canvas
       render = function(canvas)
         local even_rows = make_even(canvas.rows) + 1
-        local even_cols = make_even(canvas.cols)
+        local even_cols = make_even(canvas.cols) + 1
 
-        local rows = 10
-        local cols = 30
+        local rows = 11
+        local cols = 31
+
+        if elapsed <= 1 then
+          local fac = 1.0 - elapsed * 0.75
+          rows = math.floor(rows - fac * rows)
+          cols = math.floor(cols - fac * cols)
+        end
+
+        if elapsed >= 3.5 then
+          local fac = math.min(elapsed - 3.5, 1.0) / 1.0
+          rows = math.floor(rows - fac * rows)
+          cols = math.floor(cols - fac * cols)
+        end
 
         local center = { row = even_rows / 2, col = even_cols / 2 }
 
@@ -74,7 +86,7 @@ local M = {
         canvas.draw_circle(blue_circle, blue_dec)
 
         --- @type Rect
-        local white_rect = { row = center.row - 1, col = center.col - rows / 2 + 1, rows = 3, cols = rows - 1 }
+        local white_rect = { row = center.row - 1, col = center.col - rows / 2, rows = 3, cols = rows }
         local white_dec = { bg = "#FFFFFF" }
         canvas.draw_rect(white_rect, white_dec, opts)
 
@@ -129,4 +141,5 @@ return M
 
 
 
+--
 --

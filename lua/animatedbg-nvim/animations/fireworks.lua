@@ -30,7 +30,10 @@ local M = {
 
           local row_limit = math.random(0.2 * opts.rows, 0.4 * opts.rows)
 
-          local color = "#111111"
+          local r = math.random(0, 255)
+          local g = math.random(0, 255)
+          local b = math.random(0, 255)
+          local color = utils.join_color(r, g, b)
 
           local firework = {
             col = col,
@@ -51,7 +54,7 @@ local M = {
         local filtered_fireworks = {}
         for _, f in ipairs(fireworks) do
           move(f, dt, 0.3 * gravity)
-          f.color = utils.brighten(f.color, 0.09)
+          -- f.color = utils.brighten(f.color, 0.09)
           if f.row > f.row_limit and f.row_speed < 0 then
             table.insert(filtered_fireworks, f)
           else
@@ -86,11 +89,9 @@ local M = {
 
       render = function(canvas)
         for _, f in ipairs(fireworks) do
-          -- local rect = { row = f.row, col = f.col, rows = 1, cols = 1 }
-          -- canvas.draw_rect(rect, decoration)
           local decoration = { bg = f.color }
-          local circle = { center = { row = f.row, col = f.col }, radius = 1 }
-          canvas.draw_circle(circle, decoration, { painting_style = "line" })
+          local rect = { row = f.row, col = f.col, rows = 1, cols = 1 }
+          canvas.draw_rect(rect, decoration, { painting_style = "fill" })
         end
 
         for _, p in ipairs(particles) do

@@ -163,6 +163,9 @@ M.create = function()
   --- @param threshold number
   --- @return "border"|"inside"|"outside"
   local function get_point_status_in_rect(rect, point, threshold)
+    rect.row = math.floor(rect.row)
+    rect.col = math.floor(rect.col)
+
     if point.row == rect.row or point.row == rect.row + rect.rows - 1 then
       return "border"
     end
@@ -189,6 +192,12 @@ M.create = function()
   --- @param threshold number
   --- @return "outside"|"border"|"inside"
   local function get_point_status_in_circle(circle, point, threshold)
+    circle.center.row = math.floor(circle.center.row)
+    circle.center.col = math.floor(circle.center.col)
+
+    point.row = math.floor(point.row)
+    point.col = math.floor(point.col)
+
     local row_term = math.pow(circle.center.row - point.row, 2)
     local col_term = math.pow(circle.center.col - point.col, 2)
     local dist = math.sqrt(row_term + col_term)
@@ -213,14 +222,14 @@ M.create = function()
   --- @return "outside"|"inside"|"border"
   local function get_point_status_in_polygon(polygon, point, threshold)
     local vertices = polygon.vertices
-    local x, y = point.col, point.row
+    local x, y = math.floor(point.col), math.floor(point.row)
     local inside = false
     local n = #vertices
     local j = n
 
     for i = 1, n do
-      local xi, yi = vertices[i].col, vertices[i].row
-      local xj, yj = vertices[j].col, vertices[j].row
+      local xi, yi = math.floor(vertices[i].col), math.floor(vertices[i].row)
+      local xj, yj = math.floor(vertices[j].col), math.floor(vertices[j].row)
 
       -- Check for border using distance from line segment
       local dx, dy = xj - xi, yj - yi
@@ -246,7 +255,7 @@ M.create = function()
   end
 
   --- @class PaintingOpts
-  --- @field painting_style? "fill"|"empty"
+  --- @field painting_style? "fill"|"line"
   --- @field rotation_angle? number
   --- @field rotation_center? Point
 
@@ -261,7 +270,7 @@ M.create = function()
 
     local end_row = rect.row + rect.rows
     for i = rect.row, end_row - 1, 1 do
-      i = math.ceil(i)
+      i = math.floor(i)
 
       if not C.raw_canvas[i] then
         goto next_row
@@ -269,7 +278,7 @@ M.create = function()
 
       local end_col = rect.col + rect.cols
       for j = rect.col, end_col - 1, 1 do
-        j = math.ceil(j)
+        j = math.floor(j)
 
         local status = classifier({ row = i, col = j })
 
@@ -329,7 +338,7 @@ M.create = function()
     }
 
     C.generic_draw(rect, decoration, opts, function(point)
-      return get_point_status_in_circle(circle, point, 1)
+      return get_point_status_in_circle(circle, point, math.sqrt(2))
     end)
   end
 

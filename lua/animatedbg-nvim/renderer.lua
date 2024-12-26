@@ -12,10 +12,6 @@ internal.get_line = function(buf, row)
 end
 
 internal.clean = function(buffer)
-  if not buffer then
-    return
-  end
-  vim.api.nvim_buf_clear_namespace(buffer, internal.ns_id, 0, -1)
   if vim.api.nvim_buf_is_valid(buffer) then
     vim.api.nvim_buf_clear_namespace(buffer, internal.ns_id, 0, -1)
     for _, id in ipairs(internal.active_extmarks) do

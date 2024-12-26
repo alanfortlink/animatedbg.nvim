@@ -25,7 +25,11 @@ end
 
 local load_builtin_animations = function()
   --- @type string[]
-  local builtin = { "animatedbg-nvim.animations.demo", "animatedbg-nvim.animations.fireworks" }
+  local builtin = {
+    "animatedbg-nvim.animations.demo",
+    "animatedbg-nvim.animations.fireworks",
+    "animatedbg-nvim.animations.anim_skeleton",
+  }
   add_custom_builders(builtin)
 end
 

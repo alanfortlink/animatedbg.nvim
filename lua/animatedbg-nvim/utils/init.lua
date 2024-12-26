@@ -55,7 +55,7 @@ local split_color = function(rgb_color)
   return r, g, b
 end
 
-local join_color = function(r, g, b)
+M.join_color = function(r, g, b)
   return string.format("#%02x%02x%02x", r, g, b)
 end
 
@@ -68,7 +68,7 @@ M.brighten = function(rgb_color, factor)
   r = clamp_color(r + r * factor)
   g = clamp_color(g + g * factor)
   b = clamp_color(b + b * factor)
-  return join_color(r, g, b)
+  return M.join_color(r, g, b)
 end
 
 M.darken = function(rgb_color, factor)
@@ -76,7 +76,7 @@ M.darken = function(rgb_color, factor)
   r = clamp_color(r - r * factor)
   g = clamp_color(g - g * factor)
   b = clamp_color(b - b * factor)
-  return join_color(r, g, b)
+  return M.join_color(r, g, b)
 end
 
 return M

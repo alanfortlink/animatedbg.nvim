@@ -68,7 +68,9 @@ internal.run = function()
     return
   end
 
-  renderer.clean()
+  for buffer, _ in pairs(buf_to_canvas) do
+    renderer.clean(buffer)
+  end
   is_execution_running = false
 end
 
