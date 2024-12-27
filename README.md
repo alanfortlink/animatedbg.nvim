@@ -1,5 +1,14 @@
 ## animatedbg.nvim
 
+Create/play animations inside neovim's buffer.
+
+
+
+
+https://github.com/user-attachments/assets/d851c55a-a512-44c0-a55a-770841d2a770
+
+
+
 ## Installation
 
 ### With Lazy
