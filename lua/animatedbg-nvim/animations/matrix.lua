@@ -38,7 +38,7 @@ local M = {
 
     local cols_to_re_add = (function()
       local all_cols = {}
-      for i = 1, opts.cols do
+      for i = 0, opts.cols do
         table.insert(all_cols, i)
       end
       return all_cols
