@@ -35,7 +35,7 @@ https://github.com/user-attachments/assets/2caacd51-ac48-4dfd-bcfe-67f744b26fa0
 
 ```lua
 local animatedbg = require("animatedbg-nvim")
-animatedbg.play({ animation = "fireworks" }) -- fireworks | demo
+animatedbg.play({ animation = "fireworks" }) -- fireworks | matrix | demo 
 -- animatedbg.play({ animation = "matrix", duration = 20 }) -- some support duration
 -- animatedbg.stop_all() -- if you don't want to wait
 ```
