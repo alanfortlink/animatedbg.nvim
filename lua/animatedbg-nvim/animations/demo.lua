@@ -26,11 +26,8 @@ local M = {
 
       --- @param canvas Canvas
       render = function(canvas)
-        local even_rows = make_even(canvas.rows) + 1
-        local even_cols = make_even(canvas.cols) + 1
-
-        local rows = 15
-        local cols = 31
+        local rows = 17
+        local cols = 41
 
         if elapsed <= 1 then
           local fac = 1.0 - elapsed * 1
@@ -44,13 +41,13 @@ local M = {
           cols = math.floor(cols - fac * cols)
         end
 
-        local center = { row = even_rows / 2, col = even_cols / 2 }
+        local center = { row = math.floor(canvas.rows / 2), col = math.floor(canvas.cols / 2) }
 
-        local top = center.row - rows / 2
-        local left = center.col - cols / 2
+        local top = math.floor(center.row - rows / 2)
+        local left = math.floor(center.col - cols / 2)
 
-        local bottom = center.row + rows / 2 - 1
-        local right = center.col + cols / 2 - 1
+        local bottom = math.floor(center.row + rows / 2)
+        local right = math.floor(center.col + cols / 2)
 
         local rot_duration = 2
         local angle = 2 * math.pi * (elapsed % rot_duration) / rot_duration
@@ -61,13 +58,13 @@ local M = {
         local opts = { rotation_angle = angle, rotation_center = center }
 
         --- @type Rect
-        local green_rect = { row = top, col = left, rows = rows, cols = cols }
+        local green_rect = { row = top, col = left, rows = rows + 1, cols = cols + 1 }
         --- @type Decoration
         local green_dec = { bg = "#009739" }
 
         canvas.draw_rect(green_rect, green_dec, opts)
 
-        --- @type Polygon
+        -- --- @type Polygon
         local yellow_polygon = {
           vertices = {
             { row = top,        col = center.col },
@@ -79,14 +76,15 @@ local M = {
         local yellow_dec = { bg = "#FEDD00" }
         canvas.draw_polygon(yellow_polygon, yellow_dec, opts)
 
+        local radius = math.floor(rows / 2)
         --- @type Circle
-        local blue_circle = { center = { row = center.row, col = center.col }, radius = rows / 2 }
+        local blue_circle = { center = center, radius = radius }
         local blue_dec = { bg = "#012169" }
 
-        canvas.draw_circle(blue_circle, blue_dec)
+        canvas.draw_circle(blue_circle, blue_dec, opts)
 
         --- @type Rect
-        local white_rect = { row = center.row - 1, col = center.col - rows / 2, rows = 3, cols = rows }
+        local white_rect = { row = center.row - 1, col = center.col - radius + 1, rows = 3, cols = 2 * radius }
         local white_dec = { bg = "#FFFFFF" }
         canvas.draw_rect(white_rect, white_dec, opts)
 

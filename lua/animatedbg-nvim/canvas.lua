@@ -158,40 +158,39 @@ M.create = function()
   --- @field row number
   --- @field col number
 
-  --- @param rect Rect
-  --- @param point Point
-  --- @param threshold number
-  --- @return "border"|"inside"|"outside"
-  local function get_point_status_in_rect(rect, point, threshold)
-    rect.row = math.floor(rect.row)
-    rect.col = math.floor(rect.col)
-
-    if point.row == rect.row or point.row == rect.row + rect.rows - 1 then
-      return "border"
-    end
-
-    if point.col == rect.col or point.col == rect.col + rect.cols - 1 then
-      return "border"
-    end
-
-    if point.row >= rect.row and point.row < rect.row + rect.rows then
-      if point.col >= rect.col and point.col < rect.col + rect.cols then
-        return "inside"
-      end
-    end
-
-    return "outside"
-  end
-
   --- @class Circle
   --- @field center Point
   --- @field radius number
 
+  local function is_point_on_line_segment(p1, p2, point)
+    local cross_product = (point.row - p1.row) * (p2.col - p1.col) - (point.col - p1.col) * (p2.row - p1.row)
+    if math.abs(cross_product) > 2 then
+      return false -- Not collinear
+    end
+
+    local dot_product = (point.col - p1.col) * (p2.col - p1.col) + (point.row - p1.row) * (p2.row - p1.row)
+    if dot_product < 0 then
+      return false -- Outside the segment, before p1
+    end
+
+    local squared_length = (p2.col - p1.col) ^ 2 + (p2.row - p1.row) ^ 2
+    if dot_product > squared_length then
+      return false -- Outside the segment, beyond p2
+    end
+
+    return true
+  end
+
+
   --- @param circle Circle
   --- @param point Point
   --- @param threshold number
+  --- @param angle number
+  --- @param center Point
   --- @return "outside"|"border"|"inside"
-  local function get_point_status_in_circle(circle, point, threshold)
+  local function get_point_status_in_circle(circle, point, threshold, angle, center)
+    circle.center.row, circle.center.col = utils.rotate(circle.center.row, circle.center.col, angle, center)
+
     circle.center.row = math.floor(circle.center.row)
     circle.center.col = math.floor(circle.center.col)
 
@@ -219,10 +218,12 @@ M.create = function()
   --- @param polygon Polygon
   --- @param point Point
   --- @param threshold number
+  --- @param angle number
+  --- @param center Point
   --- @return "outside"|"inside"|"border"
-  local function get_point_status_in_polygon(polygon, point, threshold)
+  local function get_point_status_in_polygon(polygon, point, threshold, angle, center)
     local vertices = polygon.vertices
-    local x, y = math.floor(point.col), math.floor(point.row)
+    local rcol, rrow = math.floor(point.col), math.floor(point.row)
     local inside = false
     local n = #vertices
     local j = n
@@ -231,20 +232,29 @@ M.create = function()
       local xi, yi = math.floor(vertices[i].col), math.floor(vertices[i].row)
       local xj, yj = math.floor(vertices[j].col), math.floor(vertices[j].row)
 
+      yi, xi = utils.rotate(yi, xi, angle, center)
+      yj, xj = utils.rotate(yj, xj, angle, center)
+
+      yi = math.floor(yi)
+      xi = math.floor(xi)
+
+      yj = math.floor(yj)
+      xj = math.floor(xj)
+
       -- Check for border using distance from line segment
       local dx, dy = xj - xi, yj - yi
-      local t = ((x - xi) * dx + (y - yi) * dy) / (dx * dx + dy * dy)
+      local t = ((rcol - xi) * dx + (rrow - yi) * dy) / (dx * dx + dy * dy)
       t = math.max(0, math.min(1, t))
       local closestX, closestY = xi + t * dx, yi + t * dy
-      local dist = math.sqrt((x - closestX) ^ 2 + (y - closestY) ^ 2)
+      local dist = math.sqrt((rcol - closestX) ^ 2 + (rrow - closestY) ^ 2)
 
       if dist <= threshold then
         return "border"
       end
 
       -- Ray-casting for inside check
-      if ((yi > y) ~= (yj > y)) and
-          (x < (xj - xi) * (y - yi) / (yj - yi) + xi) then
+      if ((yi > rrow) ~= (yj > rrow)) and
+          (rcol < (xj - xi) * (rrow - yi) / (yj - yi) + xi) then
         inside = not inside
       end
 
@@ -254,7 +264,7 @@ M.create = function()
     return inside and "inside" or "outside"
   end
 
-  local rotate_rect = function(rect, opts)
+  local get_rect_coverage = function(rect, opts)
     local angle = opts.rotation_angle or 0
     local center = opts.rotation_center
 
@@ -269,11 +279,13 @@ M.create = function()
     local max_row = math.max(top_left.row, top_right.row, bottom_left.row, bottom_right.row)
     local max_col = math.max(top_left.col, top_right.col, bottom_left.col, bottom_right.col)
 
+    local padding = 8
+
     rect = {
-      row = math.floor(min_row),
-      col = math.floor(min_col),
-      rows = math.floor(max_row - min_row + 1),
-      cols = math.floor(max_col - min_col + 1),
+      row = math.floor(min_row) - padding,
+      col = math.floor(min_col) - padding,
+      rows = math.floor(max_row - min_row + 1) + padding,
+      cols = math.floor(max_col - min_col + 1) + padding,
     }
 
     return rect
@@ -294,8 +306,7 @@ M.create = function()
     opts = opts or {}
     local painting_style = opts.painting_style or "fill"
 
-    -- I was trying to fix the empty cells when rotating, but haven't figure it out yet
-    -- rect = rotate_rect(rect, opts)
+    rect = get_rect_coverage(rect, opts)
 
     if opts.debug then
       local outer_rect = { row = rect.row - 1, col = rect.col - 1, rows = rect.rows + 2, cols = rect.cols + 2 }
@@ -314,9 +325,11 @@ M.create = function()
       for j = rect.col, end_col - 1, 1 do
         j = math.floor(j)
 
-        local ri, rj = utils.rotate(i, j, opts.rotation_angle or 0, opts.rotation_center)
-        ri = math.floor(ri)
-        rj = math.floor(rj)
+        -- local ri, rj = utils.rotate(i, j, opts.rotation_angle or 0, opts.rotation_center)
+        -- ri = math.floor(ri)
+        -- rj = math.floor(rj)
+        local ri = i
+        local rj = j
 
         local status = classifier({ row = i, col = j })
 
@@ -351,9 +364,17 @@ M.create = function()
   C.draw_rect = function(rect, decoration, opts)
     opts = opts or {}
 
-    C.generic_draw(rect, decoration, opts, function(point)
-      return get_point_status_in_rect(rect, point, 1)
-    end)
+    --- @type Polygon
+    local polygon = {
+      vertices = {
+        { row = rect.row,                 col = rect.col },
+        { row = rect.row,                 col = rect.col + rect.cols - 1 },
+        { row = rect.row + rect.rows - 1, col = rect.col + rect.cols - 1 },
+        { row = rect.row + rect.rows - 1, col = rect.col },
+      }
+    }
+
+    C.draw_polygon(polygon, decoration, opts)
   end
 
   --- @param circle Circle
@@ -372,7 +393,7 @@ M.create = function()
     }
 
     C.generic_draw(rect, decoration, opts, function(point)
-      return get_point_status_in_circle(circle, point, math.sqrt(2))
+      return get_point_status_in_circle(circle, point, math.sqrt(2), opts.rotation_angle or 0, opts.rotation_center)
     end)
   end
 
@@ -381,10 +402,6 @@ M.create = function()
   --- @param decoration Decoration
   --- @param opts PaintingOpts
   C.draw_polygon = function(polygon, decoration, opts)
-    -- for _, v in ipairs(polygon.vertices) do
-    --   v.row, v.col = utils.rotate(v.row, v.col, opts.rotation_angle or 0, opts.rotation_center)
-    -- end
-
     local top_row = C.rows
     local bottom_row = 0
 
@@ -400,14 +417,51 @@ M.create = function()
     end
 
     local rect = {
-      row = top_row,
-      col = left_col,
-      rows = bottom_row - top_row + 1,
-      cols = right_col - left_col + 1,
+      row = math.floor(top_row),
+      col = math.floor(left_col),
+      rows = math.floor(bottom_row - top_row + 1),
+      cols = math.floor(right_col - left_col + 1),
     }
 
     C.generic_draw(rect, decoration, opts, function(point)
-      return get_point_status_in_polygon(polygon, point, 1)
+      if rect.rows == 1 and rect.cols == 1 then
+        if math.floor(rect.row) == math.floor(point.row) and math.floor(rect.col) == math.floor(point.col) then
+          return "inside"
+        end
+        return "outside"
+      end
+
+      local angle, center = opts.rotation_angle or 0, opts.rotation_center or { row = 0, col = 0 }
+
+      if rect.rows == 1 then
+        local p1 = { row = rect.row, col = rect.col }
+        p1.row, p1.col = utils.rotate(p1.row, p1.col, angle, center)
+
+        local p2 = { row = rect.row, col = rect.col + rect.cols - 1 }
+        p2.row, p2.col = utils.rotate(p2.row, p2.col, angle, center)
+
+        if is_point_on_line_segment(p1, p2, point) then
+          return "border"
+        end
+
+        return "outside"
+      end
+
+      if rect.cols == 1 then
+        local p1 = { row = rect.row, col = rect.col }
+        p1.row, p1.col = utils.rotate(p1.row, p1.col, angle, center)
+
+        local p2 = { row = rect.row + rect.rows - 1, col = rect.col }
+        p2.row, p2.col = utils.rotate(p2.row, p2.col, angle, center)
+
+        if is_point_on_line_segment(p1, p2, point) then
+          return "border"
+        end
+
+        return "outside"
+      end
+
+      return get_point_status_in_polygon(polygon, point, 1, angle, center)
     end)
   end
 

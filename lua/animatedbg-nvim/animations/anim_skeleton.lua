@@ -12,13 +12,16 @@ local M = {
 
       update = function(dt)
         elapsed = elapsed + dt
-        return elapsed <= 3 -- Animation is over after 3 seconds
+        return elapsed <= 5 -- Animation is over after 5 seconds
       end,
 
       --- @param canvas Canvas
       render = function(canvas)
-        local rows = 10
-        local cols = 20
+        local rows = 15
+        local cols = 30
+
+        local duration = 5.0
+        local angle = 2 * math.pi * ((elapsed % duration) / duration)
 
         local center = { row = canvas.rows / 2, col = canvas.cols / 2 }
 
@@ -40,7 +43,8 @@ local M = {
         --- @type PaintingOpts
         local opts = {
           painting_style = "line",
-          rotation_angle = 0,
+          rotation_angle = angle,
+          rotation_center = center,
         }
         canvas.draw_rect(rect, decoration, opts)
       end
