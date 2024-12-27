@@ -46,7 +46,7 @@ You need to prove an animation builder that contains:
 - A unique `id`
 - A `create(opts)` function that returns an animation.
   - `opts` contains information about the buffer, window, and size (`opts.rows` and `opts.cols`).
-  - See some example of it is used in the `./lua/animatedbg-nvim/animations` directory.
+  - See some examples of how it is used in `./lua/animatedbg-nvim/animations`.
 
 The animation table that is returned by `create` must have:
 - `init()`, called once, right before the animation starts
