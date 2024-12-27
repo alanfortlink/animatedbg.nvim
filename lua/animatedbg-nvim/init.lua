@@ -29,6 +29,7 @@ local load_builtin_animations = function()
     "animatedbg-nvim.animations.demo",
     "animatedbg-nvim.animations.fireworks",
     "animatedbg-nvim.animations.anim_skeleton",
+    "animatedbg-nvim.animations.matrix",
   }
   add_custom_builders(builtin)
 end
