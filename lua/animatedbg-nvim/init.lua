@@ -83,12 +83,16 @@ M.play = function(opts)
   end
 
   local builder = internal.animation_builders[opts.animation]
-  local executor_opts = {
-    builder = builder,
-    fps = internal.default_opts.fps,
-    buffer = vim.api.nvim_get_current_buf(),
-    window = vim.api.nvim_get_current_win(),
-  }
+
+  local executor_opts = {}
+  for k, v in pairs(opts) do
+    executor_opts[k] = v
+  end
+
+  executor_opts.builder = builder
+  executor_opts.fps = internal.default_opts.fps
+  executor_opts.buffer = vim.api.nvim_get_current_buf()
+  executor_opts.window = vim.api.nvim_get_current_win()
 
   local rows, cols = utils.get_win_size(executor_opts.window)
   executor_opts.rows = rows

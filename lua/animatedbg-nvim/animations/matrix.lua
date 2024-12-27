@@ -34,6 +34,8 @@ local M = {
     local elapsed = 0.0
     local last_addition = 0.0
 
+    local duration = opts.duration or 10
+
     local cols_to_re_add = (function()
       local all_cols = {}
       for i = 1, opts.cols do
@@ -108,7 +110,7 @@ local M = {
 
         move_cells(dt)
 
-        return elapsed <= 10 -- ends after 10 seconds
+        return elapsed <= duration -- ends after `duration` seconds
       end,
 
       render = function(canvas)
