@@ -30,6 +30,9 @@ end
 --- @param center? Point
 --- @return number, number
 M.rotate = function(row, col, angle, center)
+  if angle == 0 then
+    return row, col
+  end
   center = center or { row = 0, col = 0 }
   -- Convert angle from degrees to radians
   local radians = angle
