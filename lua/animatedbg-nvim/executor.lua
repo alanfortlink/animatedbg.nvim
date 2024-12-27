@@ -1,5 +1,6 @@
 --- @class Executor
 --- @field start_new_animation fun(opts: ExecutorOpts)
+--- @field stop_all fun()
 
 
 --- @class ExecutorOpts
@@ -13,7 +14,6 @@
 --- @field id string
 
 local internal = {}
-internal.last_id = 0
 internal.animations = {}
 
 local buf_to_canvas = {}
@@ -21,10 +21,10 @@ local renderer = require("animatedbg-nvim.renderer")
 
 local is_execution_running = false
 local global_dt = 0
+local should_stop_all = false
 
 --- @type Executor
 local M = {
-
   --- @param opts ExecutorOpts
   start_new_animation = function(opts)
     if not buf_to_canvas[opts.buffer] then
@@ -45,11 +45,33 @@ local M = {
       is_execution_running = true
       internal.run()
     end
+  end,
+  stop_all = function()
+    if not is_execution_running then
+      return
+    end
+
+    should_stop_all = true
   end
 }
 
 
 internal.run = function()
+  if should_stop_all then
+    for _, canvas in pairs(buf_to_canvas) do
+      canvas.clear()
+    end
+
+    for buffer, _ in pairs(buf_to_canvas) do
+      renderer.clean(buffer)
+    end
+
+    buf_to_canvas = {}
+    internal.animations = {}
+
+    should_stop_all = false
+  end
+
   local count = 0
   for _, canvas in pairs(buf_to_canvas) do
     canvas.clear()

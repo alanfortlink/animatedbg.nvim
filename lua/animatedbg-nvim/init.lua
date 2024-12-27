@@ -101,4 +101,8 @@ M.play = function(opts)
   executor.start_new_animation(executor_opts)
 end
 
+M.stop_all = function()
+  executor.stop_all()
+end
+
 return M
