@@ -5,8 +5,8 @@ Create/play animations inside neovim's buffer.
 
 
 
+https://github.com/user-attachments/assets/0f90d076-9661-416f-9547-59da49e66f27
 
-https://github.com/user-attachments/assets/2f4231f7-37cd-4765-81cc-eca03295b458
 
 
 
