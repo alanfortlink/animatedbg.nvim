@@ -34,7 +34,7 @@ local M = {
     local elapsed = 0.0
     local last_addition = 0.0
 
-    local cols_to_re_add = (function ()
+    local cols_to_re_add = (function()
       local all_cols = {}
       for i = 1, opts.cols do
         table.insert(all_cols, i)
@@ -52,7 +52,7 @@ local M = {
           velocity = math.floor(math.random(8, 12)),
           symbol = get_random_symbol(),
           trail = {},
-          trail_limit = math.random(7, 9)
+          trail_limit = opts.rows / 2,
         }
 
         table.insert(cells, cell)
@@ -66,10 +66,6 @@ local M = {
       local new_cells = {}
 
       for _, cell in ipairs(cells) do
-        if #cell.trail < cell.trail_limit then
-          table.insert(cell.trail, get_random_symbol())
-        end
-
         --- @type Cell
         local new_cell = {
           pos = { row = cell.pos.row + cell.velocity * dt, col = cell.pos.col },
@@ -79,7 +75,16 @@ local M = {
           trail_limit = cell.trail_limit,
         }
 
-        if new_cell.pos.row >= opts.rows then
+        if math.floor(new_cell.pos.row) ~= math.floor(cell.pos.row) then
+          if #cell.trail < cell.trail_limit then
+            table.insert(cell.trail, 1, get_random_symbol())
+          else
+            table.remove(cell.trail, #cell.trail)
+            table.insert(cell.trail, 1, get_random_symbol())
+          end
+        end
+
+        if new_cell.pos.row >= 2 * opts.rows then
           table.insert(cols_to_re_add, new_cell.pos.col)
         else
           table.insert(new_cells, new_cell)
@@ -108,7 +113,7 @@ local M = {
 
       render = function(canvas)
         for _, cell in ipairs(cells) do
-          if cell.pos.row < 0 or cell.pos.row >= opts.rows then
+          if cell.pos.row < 0 or cell.pos.row >= 2 * opts.rows then
             goto continue
           end
 
@@ -127,7 +132,7 @@ local M = {
           local fg = "#00FF00"
           local content = cell.symbol
 
-          local fac = 0.2
+          local fac = 0.1
 
           local decoration = { bg = bg, fg = fg, content = content }
           canvas.draw_rect(rect, decoration)
