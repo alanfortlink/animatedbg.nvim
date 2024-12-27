@@ -133,13 +133,12 @@ local M = {
             cols = 1,
           }
 
-          local bg = "#000000"
           local fg = "#00FF00"
           local content = cell.symbol
 
           local fac = 0.1
 
-          local decoration = { bg = bg, fg = fg, content = content }
+          local decoration = { fg = fg, content = content }
           canvas.draw_rect(rect, decoration)
 
           for _, t in ipairs(cell.trail) do
@@ -149,12 +148,11 @@ local M = {
               break
             end
 
-            bg = utils.darken(bg, fac)
             fg = utils.darken(fg, fac)
 
             content = t
 
-            decoration = { bg = bg, fg = fg, content = content }
+            decoration = { fg = fg, content = content }
             canvas.draw_rect(rect, decoration)
           end
 
