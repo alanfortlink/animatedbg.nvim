@@ -17,8 +17,7 @@ local internal = {
 
 --- @param builders AnimationBuilder[]
 local add_custom_builders = function(builders)
-  for _, name in ipairs(builders) do
-    local builder = require(name)
+  for _, builder in ipairs(builders) do
     internal.animation_builders[builder.id] = builder
   end
 end
@@ -26,10 +25,10 @@ end
 local load_builtin_animations = function()
   --- @type string[]
   local builtin = {
-    "animatedbg-nvim.animations.demo",
-    "animatedbg-nvim.animations.fireworks",
-    "animatedbg-nvim.animations.anim_skeleton",
-    "animatedbg-nvim.animations.matrix",
+    require("animatedbg-nvim.animations.demo"),
+    require("animatedbg-nvim.animations.fireworks"),
+    require("animatedbg-nvim.animations.anim_skeleton"),
+    require("animatedbg-nvim.animations.matrix"),
   }
   add_custom_builders(builtin)
 end
