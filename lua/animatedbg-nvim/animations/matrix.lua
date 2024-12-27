@@ -52,7 +52,7 @@ local M = {
           velocity = math.floor(math.random(8, 12)),
           symbol = get_random_symbol(),
           trail = {},
-          trail_limit = opts.rows / 2,
+          trail_limit = math.random(6, 10),
         }
 
         table.insert(cells, cell)
@@ -84,7 +84,7 @@ local M = {
           end
         end
 
-        if new_cell.pos.row >= 2 * opts.rows then
+        if new_cell.pos.row >= opts.rows + #new_cell.trail then
           table.insert(cols_to_re_add, new_cell.pos.col)
         else
           table.insert(new_cells, new_cell)
@@ -113,7 +113,7 @@ local M = {
 
       render = function(canvas)
         for _, cell in ipairs(cells) do
-          if cell.pos.row < 0 or cell.pos.row >= 2 * opts.rows then
+          if cell.pos.row < 0 or cell.pos.row >= opts.rows + #cell.trail then
             goto continue
           end
 
