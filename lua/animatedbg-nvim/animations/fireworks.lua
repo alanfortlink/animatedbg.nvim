@@ -18,7 +18,7 @@ local M = {
     --- @type Animation
     local I = {
       init = function()
-        gravity = 0.05 * opts.rows
+        gravity = 0.075 * opts.rows
 
         elapsed = 0.0
         for i = 0, 20, 1 do

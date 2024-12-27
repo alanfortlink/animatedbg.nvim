@@ -29,11 +29,11 @@ local M = {
         local even_rows = make_even(canvas.rows) + 1
         local even_cols = make_even(canvas.cols) + 1
 
-        local rows = 11
+        local rows = 15
         local cols = 31
 
         if elapsed <= 1 then
-          local fac = 1.0 - elapsed * 0.75
+          local fac = 1.0 - elapsed * 1
           rows = math.floor(rows - fac * rows)
           cols = math.floor(cols - fac * cols)
         end

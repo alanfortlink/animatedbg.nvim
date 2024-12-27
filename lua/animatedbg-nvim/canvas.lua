@@ -23,7 +23,7 @@ M.create = function()
   ---
   --- We create highlights only for the colors that are used in the animation
   --- Also, some characters are not allowed to be used in a highlight's name
-  --- @type {string: string}
+  --- @type table {hl: string, content: string|nil}
   C.active_hls = {}
 
 
@@ -254,10 +254,36 @@ M.create = function()
     return inside and "inside" or "outside"
   end
 
+  local rotate_rect = function(rect, opts)
+    local angle = opts.rotation_angle or 0
+    local center = opts.rotation_center
+
+    local top_left = utils.rotate_to_point(rect.row, rect.col, angle, center)
+    local top_right = utils.rotate_to_point(rect.row, rect.col + rect.cols - 1, angle, center)
+    local bottom_left = utils.rotate_to_point(rect.row + rect.rows - 1, rect.col, angle, center)
+    local bottom_right = utils.rotate_to_point(rect.row + rect.rows - 1, rect.col + rect.cols - 1, angle, center)
+
+    local min_row = math.min(top_left.row, top_right.row, bottom_left.row, bottom_right.row)
+    local min_col = math.min(top_left.col, top_right.col, bottom_left.col, bottom_right.col)
+
+    local max_row = math.max(top_left.row, top_right.row, bottom_left.row, bottom_right.row)
+    local max_col = math.max(top_left.col, top_right.col, bottom_left.col, bottom_right.col)
+
+    rect = {
+      row = math.floor(min_row),
+      col = math.floor(min_col),
+      rows = math.floor(max_row - min_row + 1),
+      cols = math.floor(max_col - min_col + 1),
+    }
+
+    return rect
+  end
+
   --- @class PaintingOpts
   --- @field painting_style? "fill"|"line"
   --- @field rotation_angle? number
   --- @field rotation_center? Point
+  --- @field debug? boolean
 
   ---Draws all the points in a rect that are valid according to the classifier
   --- @param rect Rect
@@ -267,6 +293,14 @@ M.create = function()
   C.generic_draw = function(rect, decoration, opts, classifier)
     opts = opts or {}
     local painting_style = opts.painting_style or "fill"
+
+    -- I was trying to fix the empty cells when rotating, but haven't figure it out yet
+    -- rect = rotate_rect(rect, opts)
+
+    if opts.debug then
+      local outer_rect = { row = rect.row - 1, col = rect.col - 1, rows = rect.rows + 2, cols = rect.cols + 2 }
+      C.draw_rect(outer_rect, { bg = "#FFFFFF", fg = "#000000", content = "X" }, { painting_style = "line" })
+    end
 
     local end_row = rect.row + rect.rows
     for i = rect.row, end_row - 1, 1 do
@@ -280,6 +314,10 @@ M.create = function()
       for j = rect.col, end_col - 1, 1 do
         j = math.floor(j)
 
+        local ri, rj = utils.rotate(i, j, opts.rotation_angle or 0, opts.rotation_center)
+        ri = math.floor(ri)
+        rj = math.floor(rj)
+
         local status = classifier({ row = i, col = j })
 
         if painting_style == "line" and status ~= "border" then
@@ -289,10 +327,6 @@ M.create = function()
         if status == "outside" then
           goto next_column
         end
-
-        local ri, rj = utils.rotate(i, j, opts.rotation_angle or 0, opts.rotation_center)
-        ri = math.floor(ri)
-        rj = math.floor(rj)
 
         if not C.raw_canvas[ri] then
           goto next_column
@@ -313,7 +347,7 @@ M.create = function()
 
   --- @param rect Rect
   --- @param decoration Decoration
-  --- @param opts PaintingOpts
+  --- @param opts? PaintingOpts
   C.draw_rect = function(rect, decoration, opts)
     opts = opts or {}
 
@@ -347,6 +381,10 @@ M.create = function()
   --- @param decoration Decoration
   --- @param opts PaintingOpts
   C.draw_polygon = function(polygon, decoration, opts)
+    -- for _, v in ipairs(polygon.vertices) do
+    --   v.row, v.col = utils.rotate(v.row, v.col, opts.rotation_angle or 0, opts.rotation_center)
+    -- end
+
     local top_row = C.rows
     local bottom_row = 0
 

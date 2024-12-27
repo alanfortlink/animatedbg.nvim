@@ -46,6 +46,12 @@ M.rotate = function(row, col, angle, center)
   return final_row, final_col
 end
 
+--- @return Point
+M.rotate_to_point = function(row, col, angle, center)
+  local r, c = M.rotate(row, col, angle, center)
+  return { row = r, col = c }
+end
+
 local split_color = function(rgb_color)
   assert(#rgb_color == 7, string.format("Expect rgb like '#FFFFFF', not %s", rgb_color))
   local r = tonumber(string.sub(rgb_color, 2, 3), 16);
