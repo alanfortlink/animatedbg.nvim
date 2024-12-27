@@ -115,7 +115,10 @@ local M = {
 
       render = function(canvas)
         for _, cell in ipairs(cells) do
-          if cell.pos.row < 0 or cell.pos.row >= opts.rows + #cell.trail then
+          if #cell.trail == 0 then
+            goto continue
+          end
+          if cell.pos.row <= 0 or cell.pos.row >= opts.rows + #cell.trail then
             goto continue
           end
 
@@ -141,6 +144,10 @@ local M = {
 
           for _, t in ipairs(cell.trail) do
             rect.row = rect.row - 1
+
+            if rect.row < 0 then
+              break
+            end
 
             bg = utils.darken(bg, fac)
             fg = utils.darken(fg, fac)
