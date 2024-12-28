@@ -49,7 +49,7 @@ M.render = function(canvas, opts)
       end
       local hl = bundle.hl
 
-      if row_content:sub(col, col) == " " then
+      if row_content:sub(col+1, col+1) == " " then
         local id = vim.api.nvim_buf_set_extmark(buffer, internal.ns_id, real_row, col, {
           virt_text = { { bundle.content or " ", bundle.hl }, },
           virt_text_pos = "overlay",
