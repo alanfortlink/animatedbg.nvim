@@ -103,6 +103,10 @@ require("animatedbg-nvim").setup({
 })
 ```
 
+### Share your animations.
+
+If you build any animations and would like to share them, there's a [discussion page](https://github.com/alanfortlink/animatedbg.nvim/discussions/1) that you can use.
+
 ### Known Issues
 
 - The "canvas" will be the width of your window but the size of your buf. Make sure you have enough lines in order to see the animations :)
