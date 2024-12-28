@@ -7,7 +7,7 @@ local internal = {}
 internal.active_extmarks = {}
 internal.ns_id = vim.api.nvim_create_namespace("animated")
 
-internal.get_line = function(buf, row)
+internal.get_row_content = function(buf, row)
   return vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1] or ""
 end
 
@@ -39,7 +39,8 @@ M.render = function(canvas, opts)
 
   for row = 0, rows - 1, 1 do
     local real_row = row + row_scroll - 1
-    local used_space = #internal.get_line(buffer, real_row)
+    local row_content = internal.get_row_content(buffer, real_row)
+    local used_space = #row_content
 
     for col = 0, used_space, 1 do
       local bundle = canvas.get_hl(row, col)
@@ -47,10 +48,19 @@ M.render = function(canvas, opts)
         goto continue
       end
       local hl = bundle.hl
-      -- local content = bundle.content
-      pcall(function()
-        vim.api.nvim_buf_add_highlight(buffer, internal.ns_id, hl, real_row, col, col + 1)
-      end)
+
+      if row_content:sub(col, col) == " " then
+        local id = vim.api.nvim_buf_set_extmark(buffer, internal.ns_id, real_row, col, {
+          virt_text = { { bundle.content or " ", bundle.hl }, },
+          virt_text_pos = "overlay",
+          strict = false,
+        })
+        table.insert(internal.active_extmarks, id);
+      else
+        pcall(function()
+          vim.api.nvim_buf_add_highlight(buffer, internal.ns_id, hl, real_row, col, col + 1)
+        end)
+      end
 
       ::continue::
     end
