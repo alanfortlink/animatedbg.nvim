@@ -61,7 +61,8 @@ local M = {
             local num_particles = 16.0
             for i = 0, num_particles - 1, 1 do
               local angle = 2 * math.pi * (i / (num_particles))
-              local row_speed, col_speed = utils.rotate(8, 0, angle)
+              local row_speed, col_speed = utils.rotate(20, 0, angle)
+              col_speed = col_speed * 2
               row_speed = row_speed + 0.1 * f.row_speed
               -- col_speed = col_speed * (M.opts.cols / M.opts.rows)
 
@@ -99,6 +100,8 @@ local M = {
           p.elapsed = p.elapsed + dt
 
           if p.elapsed >= 0.25 then
+            p.row_speed = 0.5 * p.row_speed
+            p.col_speed = 0.5 * p.col_speed
             p.elapsed = p.elapsed - 0.25
             p.color = utils.darken(p.color, 0.2)
           end
