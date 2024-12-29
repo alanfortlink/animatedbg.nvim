@@ -8,7 +8,11 @@ internal.active_extmarks = {}
 internal.ns_id = vim.api.nvim_create_namespace("animated")
 
 internal.get_row_content = function(buf, row)
-  return vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1] or ""
+  if vim.api.nvim_buf_is_valid(buf) then
+    return vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1] or ""
+  end
+
+  return ""
 end
 
 internal.clean = function(buffer)
@@ -49,7 +53,7 @@ M.render = function(canvas, opts)
       end
       local hl = bundle.hl
 
-      if row_content:sub(col+1, col+1) == " " then
+      if row_content:sub(col + 1, col + 1) == " " then
         local id = vim.api.nvim_buf_set_extmark(buffer, internal.ns_id, real_row, col, {
           virt_text = { { bundle.content or " ", bundle.hl }, },
           virt_text_pos = "overlay",
