@@ -28,7 +28,7 @@ local M = {
           local row_speed = -math.random(0.4 * opts.rows, 0.8 * opts.rows)
           local col_speed = math.random(-15, 15)
 
-          local row_limit = math.random(0.2 * opts.rows, 0.6 * opts.rows)
+          local row_limit = math.random(0.2 * opts.rows, 0.5 * opts.rows)
 
           local r = math.random(150, 255)
           local g = math.random(150, 255)
