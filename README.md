@@ -2,9 +2,9 @@
 
 Create/play animations inside neovim's buffer.
 
-[matrix.webm](https://github.com/user-attachments/assets/f89fb100-57dd-4fe5-8497-cb92f97773f2)
-[fireworks.webm](https://github.com/user-attachments/assets/96c0a839-b007-4acc-8910-704391bbcf7f)
-[demo.webm](https://github.com/user-attachments/assets/a92a9210-4088-4786-8536-0cd98e7717fb)
+https://github.com/user-attachments/assets/f89fb100-57dd-4fe5-8497-cb92f97773f2
+https://github.com/user-attachments/assets/96c0a839-b007-4acc-8910-704391bbcf7f
+https://github.com/user-attachments/assets/a92a9210-4088-4786-8536-0cd98e7717fb
 
 ## Installation
 
