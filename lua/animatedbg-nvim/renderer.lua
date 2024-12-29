@@ -37,6 +37,10 @@ M.render = function(canvas, opts)
   local buffer = opts.buffer
   local window = opts.window
 
+  if not vim.api.nvim_buf_is_valid(buffer) then
+    return
+  end
+
   local rows = opts.rows
   local cols = opts.cols
   local row_scroll, col_scroll = utils.get_scroll(window)
