@@ -17,6 +17,7 @@ end
 
 internal.clean = function(buffer)
   if vim.api.nvim_buf_is_valid(buffer) then
+    vim.api.nvim_set_hl_ns(0)
     vim.api.nvim_buf_clear_namespace(buffer, internal.ns_id, 0, -1)
     for _, id in ipairs(internal.active_extmarks) do
       vim.api.nvim_buf_del_extmark(buffer, internal.ns_id, id)
@@ -33,6 +34,8 @@ end
 M.render = function(canvas, opts)
   canvas.prerender()
   M.clean(opts.buffer)
+
+  vim.api.nvim_set_hl_ns(internal.ns_id)
 
   local buffer = opts.buffer
   local window = opts.window
@@ -51,7 +54,7 @@ M.render = function(canvas, opts)
     local used_space = #row_content
 
     for col = 0, used_space, 1 do
-      local bundle = canvas.get_hl(row, col)
+      local bundle = canvas.get_hl(row, col, internal.ns_id)
       if not bundle then
         goto continue
       end
@@ -75,7 +78,7 @@ M.render = function(canvas, opts)
 
     local extmarks = {}
     for col = used_space, cols + col_scroll, 1 do
-      local bundle = canvas.get_hl(row, col)
+      local bundle = canvas.get_hl(row, col, internal.ns_id)
       if bundle then
         table.insert(extmarks, { bundle.content or " ", bundle.hl })
       else

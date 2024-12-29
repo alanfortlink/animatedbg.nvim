@@ -74,7 +74,7 @@ M.create = function()
   --- @param row integer
   --- @param col integer
   --- @return nil | { hl: string, content: string }
-  C.get_hl = function(row, col)
+  C.get_hl = function(row, col, ns_id)
     local C_row = C.raw_canvas[row]
 
     if not C_row then
@@ -128,7 +128,7 @@ M.create = function()
     end
 
     local hl_name = string.format("AnimBG%s", key)
-    vim.api.nvim_set_hl(0, hl_name, { bg = cell.bg, fg = cell.fg })
+    vim.api.nvim_set_hl(ns_id, hl_name, { bg = cell.bg, fg = cell.fg })
 
     C.active_hls[key] = { hl = hl_name, content = cell.content }
     return { hl = hl_name, content = cell.content }
