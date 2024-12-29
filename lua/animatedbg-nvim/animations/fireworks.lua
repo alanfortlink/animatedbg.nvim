@@ -71,6 +71,8 @@ local M = {
                 row_speed = row_speed,
                 col_speed = col_speed,
                 color = f.color,
+                ttl = math.random(1, 2),
+                elapsed = 0,
               }
 
               table.insert(particles, particle)
@@ -78,11 +80,35 @@ local M = {
           end
         end
 
+        local filtered_particles = {}
         for _, p in ipairs(particles) do
+          if p.ttl <= 0 then
+            goto continue
+          end
+
+          if p.row > opts.rows then
+            goto continue
+          end
+
+          if p.col > opts.cols or p.col < 0 then
+            goto continue
+          end
+
           move(p, dt, 0)
+          p.ttl = p.ttl - dt
+          p.elapsed = p.elapsed + dt
+
+          if p.elapsed >= 0.25 then
+            p.elapsed = p.elapsed - 0.25
+            p.color = utils.darken(p.color, 0.2)
+          end
+          table.insert(filtered_particles, p)
+
+          ::continue::
         end
 
         fireworks = filtered_fireworks
+        particles = filtered_particles
 
         return elapsed <= 10
       end,
