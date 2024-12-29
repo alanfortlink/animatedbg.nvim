@@ -30,9 +30,9 @@ local M = {
 
           local row_limit = math.random(0.2 * opts.rows, 0.6 * opts.rows)
 
-          local r = math.random(0, 255)
-          local g = math.random(0, 255)
-          local b = math.random(0, 255)
+          local r = math.random(150, 255)
+          local g = math.random(150, 255)
+          local b = math.random(150, 255)
           local color = utils.join_color(r, g, b)
 
           local firework = {
