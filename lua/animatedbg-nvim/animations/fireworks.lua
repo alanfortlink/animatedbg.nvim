@@ -102,6 +102,11 @@ local M = {
             p.elapsed = p.elapsed - 0.25
             p.color = utils.darken(p.color, 0.2)
           end
+
+          if p.color == "#000000" then
+            goto continue
+          end
+
           table.insert(filtered_particles, p)
 
           ::continue::
