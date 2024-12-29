@@ -248,7 +248,7 @@ M.create = function()
       local closestX, closestY = xi + t * dx, yi + t * dy
       local dist = math.sqrt((rcol - closestX) ^ 2 + (rrow - closestY) ^ 2)
 
-      if dist <= threshold then
+      if dist < threshold then
         return "border"
       end
 
