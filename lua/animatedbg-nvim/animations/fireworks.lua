@@ -95,7 +95,7 @@ local M = {
             goto continue
           end
 
-          move(p, dt, 0)
+          move(p, dt, 4 * gravity)
           p.ttl = p.ttl - dt
           p.elapsed = p.elapsed + dt
 
