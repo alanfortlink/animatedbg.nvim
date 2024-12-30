@@ -21,11 +21,11 @@ local M = {
         gravity = 0.075 * opts.rows
 
         elapsed = 0.0
-        for i = 0, 20, 1 do
+        for i = 0, 30, 1 do
           local col = math.random(0, opts.cols)
           local row = opts.rows + i * 0.2 * opts.rows
 
-          local row_speed = -math.random(0.4 * opts.rows, 0.8 * opts.rows)
+          local row_speed = -math.random(0.5 * opts.rows, 0.9 * opts.rows)
           local col_speed = math.random(-15, 15)
 
           local row_limit = math.random(0.2 * opts.rows, 0.5 * opts.rows)
@@ -61,7 +61,7 @@ local M = {
             local num_particles = 16.0
             for i = 0, num_particles - 1, 1 do
               local angle = 2 * math.pi * (i / (num_particles))
-              local row_speed, col_speed = utils.rotate(20, 0, angle)
+              local row_speed, col_speed = utils.rotate(15, 0, angle)
               col_speed = col_speed * 2
               row_speed = row_speed + 0.1 * f.row_speed
               -- col_speed = col_speed * (M.opts.cols / M.opts.rows)
@@ -95,13 +95,13 @@ local M = {
             goto continue
           end
 
-          move(p, dt, 4 * gravity)
+          move(p, dt, 3 * gravity)
           p.ttl = p.ttl - dt
           p.elapsed = p.elapsed + dt
 
           if p.elapsed >= 0.25 then
-            p.row_speed = 0.5 * p.row_speed
-            p.col_speed = 0.5 * p.col_speed
+            p.row_speed = 0.75 * p.row_speed
+            p.col_speed = 0.75 * p.col_speed
             p.elapsed = p.elapsed - 0.25
             p.color = utils.darken(p.color, 0.2)
           end
