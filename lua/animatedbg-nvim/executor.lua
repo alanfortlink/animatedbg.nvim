@@ -12,6 +12,7 @@
 --- @field rows integer
 --- @field cols integer
 --- @field id string
+--- @field duration? number
 
 local internal = {}
 internal.animations = {}

@@ -29,6 +29,7 @@ end
 local M = {
   id = "matrix",
   create = function(opts)
+    opts = opts or {}
     --- @type Cell[]
     local cells = {};
     local elapsed = 0.0

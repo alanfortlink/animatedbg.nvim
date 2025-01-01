@@ -4,10 +4,15 @@ local utils = require("animatedbg-nvim.utils")
 local M = {
   id = "fireworks",
   create = function(opts)
+    opts = opts or {}
     local elapsed = 0.0
     local fireworks = {}
     local particles = {}
     local gravity = 10.0
+    local time_of_last_shot = 0.0
+
+    local time_between_shots = opts.time_between_shots or 0.5
+    local duration = opts.duration or 10
 
     local move = function(obj, dt, gravity_override)
       obj.row_speed = obj.row_speed + (gravity_override or gravity) * dt
@@ -15,41 +20,47 @@ local M = {
       obj.row = obj.row + obj.row_speed * dt
     end
 
+    local fire = function()
+      local col = math.random(0, opts.cols)
+      local row = opts.rows + 0.2 * opts.rows
+
+      local row_speed = -math.random(0.5 * opts.rows, 0.9 * opts.rows)
+      local col_speed = math.random(-15, 15)
+
+      local row_limit = math.random(0.2 * opts.rows, 0.5 * opts.rows)
+
+      local r = math.random(150, 255)
+      local g = math.random(150, 255)
+      local b = math.random(150, 255)
+      local color = utils.join_color(r, g, b)
+
+      local firework = {
+        col = col,
+        row = row,
+        row_speed = row_speed,
+        col_speed = col_speed,
+        color = color,
+        row_limit = row_limit,
+      }
+
+      table.insert(fireworks, firework)
+    end
+
     --- @type Animation
     local I = {
       init = function()
         gravity = 0.075 * opts.rows
-
         elapsed = 0.0
-        for i = 0, 30, 1 do
-          local col = math.random(0, opts.cols)
-          local row = opts.rows + i * 0.2 * opts.rows
-
-          local row_speed = -math.random(0.5 * opts.rows, 0.9 * opts.rows)
-          local col_speed = math.random(-15, 15)
-
-          local row_limit = math.random(0.2 * opts.rows, 0.5 * opts.rows)
-
-          local r = math.random(150, 255)
-          local g = math.random(150, 255)
-          local b = math.random(150, 255)
-          local color = utils.join_color(r, g, b)
-
-          local firework = {
-            col = col,
-            row = row,
-            row_speed = row_speed,
-            col_speed = col_speed,
-            color = color,
-            row_limit = row_limit,
-          }
-
-          table.insert(fireworks, firework)
-        end
+        fire()
       end,
 
       update = function(dt)
         elapsed = elapsed + dt
+
+        if elapsed - time_of_last_shot >= time_between_shots then
+          time_of_last_shot = elapsed
+          fire()
+        end
 
         local filtered_fireworks = {}
         for _, f in ipairs(fireworks) do
@@ -118,18 +129,18 @@ local M = {
         fireworks = filtered_fireworks
         particles = filtered_particles
 
-        return elapsed <= 10
+        return elapsed <= duration
       end,
 
       render = function(canvas)
         for _, f in ipairs(fireworks) do
           local decoration = { bg = f.color }
-          local rect = { row = f.row, col = f.col, rows = 1, cols = 1 }
+          local rect = { row = math.floor(f.row), col = math.floor(f.col), rows = math.floor(1), cols = math.floor(1), }
           canvas.draw_rect(rect, decoration, { painting_style = "fill" })
         end
 
         for _, p in ipairs(particles) do
-          local rect = { row = p.row, col = p.col, rows = 1, cols = 1 }
+          local rect = { row = math.floor(p.row), col = math.floor(p.col), rows = math.floor(1), cols = math.floor(1), }
           local decoration = { fg = p.color, content = "*" }
           canvas.draw_rect(rect, decoration)
         end
