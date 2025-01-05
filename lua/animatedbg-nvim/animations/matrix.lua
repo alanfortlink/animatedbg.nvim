@@ -19,7 +19,6 @@ local matrix_symbols = {
   "⊂", "⊃", "⊆", "⊇", "∅", "∧", "∨", -- Set theory and logic
   "↔", "→", "←", "↑", "↓", -- Arrows
   "◆", "◇", "■", "□", "▲", "△", "▼", "▽", -- Geometric shapes
-  "⌂", "☰", "☲", "☵", "☷" -- Miscellaneous symbols
 }
 
 local get_random_symbol = function()
