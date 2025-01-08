@@ -37,6 +37,8 @@ https://github.com/user-attachments/assets/a92a9210-4088-4786-8536-0cd98e7717fb
 local animatedbg = require("animatedbg-nvim")
 animatedbg.play({ animation = "fireworks" }) -- fireworks | matrix | demo 
 -- animatedbg.play({ animation = "matrix", duration = 20 }) -- some support duration
+-- animatedbg.play({ animation = "matrix", symbols = {"A", "B", "C"}}) -- replacing the symbols. remember that some symbols will not render properly :/
+-- animatedbg.play({ animation = "matrix", extra_symbols = {"A", "B", "C"}}) -- extending the symbols
 -- animatedbg.play({ animation = "fireworks", duration = 500, time_between_shots = 0.1 })
 -- animatedbg.stop_all() -- if you don't want to wait
 ```

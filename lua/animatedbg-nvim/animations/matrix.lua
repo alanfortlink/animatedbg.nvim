@@ -9,7 +9,7 @@ local utils = require("animatedbg-nvim.utils")
 --- @field trail string[]
 --- @field trail_limit integer
 
-local matrix_symbols = {
+local default_matrix_symbols = {
   "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", -- Numbers
   "!", "@", "#", "$", "%", "&", "*", "(", ")", -- Symbols
   "⟦", "⟧", "⟨", "⟩", "⟪", "⟫", "⊢", "⊣", "⊕", "⊖", -- Math/Logic
@@ -21,10 +21,6 @@ local matrix_symbols = {
   "◆", "◇", "■", "□", "▲", "△", "▼", "▽", -- Geometric shapes
 }
 
-local get_random_symbol = function()
-  return matrix_symbols[math.random(1, #matrix_symbols)]
-end
-
 local M = {
   id = "matrix",
   create = function(opts)
@@ -34,7 +30,19 @@ local M = {
     local elapsed = 0.0
     local last_addition = 0.0
 
+    local matrix_symbols = opts.symbols or default_matrix_symbols
+
+    if opts.extra_symbols then
+      for _, value in ipairs(opts.extra_symbols) do
+        table.insert(matrix_symbols, value)
+      end
+    end
+
     local duration = opts.duration or 10
+
+    local get_random_symbol = function()
+      return matrix_symbols[math.random(1, #matrix_symbols)]
+    end
 
     local cols_to_re_add = (function()
       local all_cols = {}
