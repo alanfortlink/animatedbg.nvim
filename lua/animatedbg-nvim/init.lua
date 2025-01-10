@@ -29,6 +29,7 @@ local load_builtin_animations = function()
     require("animatedbg-nvim.animations.fireworks"),
     require("animatedbg-nvim.animations.anim_skeleton"),
     require("animatedbg-nvim.animations.matrix"),
+    require("animatedbg-nvim.animations.explosion"),
   }
   add_custom_builders(builtin)
 end

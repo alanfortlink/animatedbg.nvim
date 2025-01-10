@@ -12,6 +12,10 @@
 --- @field rows integer
 --- @field cols integer
 --- @field id string
+--- @field symbols string[]
+--- @field extra_symbols string[]
+--- @field row integer
+--- @field col integer
 --- @field duration? number
 
 local internal = {}
